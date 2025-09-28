@@ -1,10 +1,10 @@
 import gleam/int
 import gleam/float
-import gleam/string
 import gleam/json.{type Json}
 import gleam/dynamic/decode.{type Decoder}
-import youid/uuid.{type Uuid}
 import birl.{type Time}
+// import gleam/string
+// import youid/uuid.{type Uuid}
 
 fn decoder_from_string(
   parse: fn(String) -> Result(t, err),
@@ -36,12 +36,6 @@ pub fn decoder_bool_string() -> Decoder(Bool) {
   })
 }
 
-pub fn decoder_uuid_string() -> Decoder(Uuid) {
-  decoder_from_string(uuid.from_string, uuid.v7_from_millisec(0), fn(str) {
-    "`decoder_uuid_string` failed to parse `Uuid` from: " <> str
-  })
-}
-
 fn parse_bool(
   str: String,
 ) -> Result(Bool, Nil) {
@@ -50,27 +44,6 @@ fn parse_bool(
     "False" -> Ok(False)
     _ -> Error(Nil)
   }
-}
-
-pub fn decoder_uuid() -> Decoder(Uuid) {
-  use str <- decode.then(decode.string)
-  case uuid.from_string(str) {
-    Ok(uuid) -> decode.success(uuid)
-    Error(Nil) -> {
-      decode.failure(zero_uuid(), "Failed to parse UUID")
-    }
-  }
-}
-
-pub fn encode_uuid(uuid: Uuid) -> Json {
-  uuid
-  |> uuid.to_string
-  |> string.lowercase
-  |> json.string
-}
-
-pub fn zero_uuid() -> Uuid {
-  uuid.v7_from_millisec(0)
 }
 
 pub fn zero_time() -> Time {
@@ -181,3 +154,32 @@ fn decoder_birl_int_to_time(
     |> decode.success
   })
 }
+
+// // // UUID // // //
+
+// pub fn decoder_uuid_string() -> Decoder(Uuid) {
+//   decoder_from_string(uuid.from_string, uuid.v7_from_millisec(0), fn(str) {
+//     "`decoder_uuid_string` failed to parse `Uuid` from: " <> str
+//   })
+// }
+
+// pub fn decoder_uuid() -> Decoder(Uuid) {
+//   use str <- decode.then(decode.string)
+//   case uuid.from_string(str) {
+//     Ok(uuid) -> decode.success(uuid)
+//     Error(Nil) -> {
+//       decode.failure(zero_uuid(), "Failed to parse UUID")
+//     }
+//   }
+// }
+
+// pub fn encode_uuid(uuid: Uuid) -> Json {
+//   uuid
+//   |> uuid.to_string
+//   |> string.lowercase
+//   |> json.string
+// }
+
+// pub fn zero_uuid() -> Uuid {
+//   uuid.v7_from_millisec(0)
+// }
